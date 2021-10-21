@@ -10,6 +10,21 @@ import (
 var db *gorm.DB
 var err error
 
+// For table Booking
+type Product struct {
+	Id    int    `json:”id”`
+	Code  string `json:”code”`
+	Name  string `json:”name”`
+	Price int    `json:"price" sql:"decimal(16,2)"`
+}
+
+// For result in array
+type Result struct {
+	Code    int         `json:”code”`
+	Data    interface{} `json:"data"`
+	Message string      `json:"message"`
+}
+
 func main() {
 	// Please define your username and password for MySQL.
 	db, err = gorm.Open("mysql", "root:@tcp(127.0.0.1:3306)/belajar-golang?charset=utf8&parseTime=True")
@@ -21,4 +36,5 @@ func main() {
 	} else {
 		log.Println("Connection Established")
 	}
+	db.AutoMigrate(&Product{})
 }
