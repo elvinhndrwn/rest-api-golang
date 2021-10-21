@@ -53,8 +53,31 @@ func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
 
 	myRouter.HandleFunc("/", homePage)
-	myRouter.HandleFunc("/api/products", createProduct).Methods("POST")
+	myRouter.HandleFunc("/api/create-product", createProduct).Methods("POST")
+	myRouter.HandleFunc("/api/products", getProducts).Methods("GET")
+
 	log.Fatal(http.ListenAndServe(":8080", myRouter))
+}
+
+func getProducts(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Get Products")
+
+	products := []Product{}
+
+	db.Find(&products)
+
+	// Set Response
+	res := Result{Code: 200, Data: products, Message: "Success"}
+	result, err := json.Marshal(res)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(result)
+
 }
 
 func createProduct(w http.ResponseWriter, r *http.Request) {
